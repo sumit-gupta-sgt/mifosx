@@ -7,7 +7,10 @@ package org.mifosplatform.accounting.journalentry.serialization;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +20,8 @@ import org.joda.time.LocalDate;
 import org.mifosplatform.accounting.journalentry.api.JournalEntryJsonInputParams;
 import org.mifosplatform.accounting.journalentry.command.JournalEntryCommand;
 import org.mifosplatform.accounting.journalentry.command.SingleDebitOrCreditEntryCommand;
+import org.mifosplatform.infrastructure.core.data.ApiParameterError;
+import org.mifosplatform.infrastructure.core.data.DataValidatorBuilder;
 import org.mifosplatform.infrastructure.core.exception.InvalidJsonException;
 import org.mifosplatform.infrastructure.core.serialization.AbstractFromApiJsonDeserializer;
 import org.mifosplatform.infrastructure.core.serialization.FromApiJsonDeserializer;
@@ -68,6 +73,8 @@ public final class JournalEntryCommandFromApiJsonDeserializer extends AbstractFr
 
         final BigDecimal amount = this.fromApiJsonHelper.extractBigDecimalNamed(JournalEntryJsonInputParams.AMOUNT.getValue(), element,
                 locale);
+        final Long paymentTypeId=this.fromApiJsonHelper.extractLongNamed(JournalEntryJsonInputParams.PAYMENT_TYPEID.getValue(),element);
+        final String accountNumber=this.fromApiJsonHelper.extractStringNamed(JournalEntryJsonInputParams.Account_Number.getValue(),element);
 
         SingleDebitOrCreditEntryCommand[] credits = null;
         SingleDebitOrCreditEntryCommand[] debits = null;
@@ -82,7 +89,21 @@ public final class JournalEntryCommandFromApiJsonDeserializer extends AbstractFr
             }
         }
         return new JournalEntryCommand(officeId, currencyCode, transactionDate, comments, credits, debits, referenceNumber,
-                accountingRuleId, amount);
+                accountingRuleId, amount, paymentTypeId, accountNumber);
+    }
+    
+    public void validateJournalPaymentDetail(final String json){
+    	if (StringUtils.isBlank(json)) { throw new InvalidJsonException(); }
+    	final List<ApiParameterError> dataValidationErrors = new ArrayList<ApiParameterError>();
+    	final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("GLJournalEntry");
+    	final JsonElement element = this.fromApiJsonHelper.parse(json);
+        final Set<String> paymentDetailParameters = new HashSet<String>(Arrays.asList("accountNumber", "checkNumber", "routingCode",
+                "receiptNumber", "bankNumber"));
+        for (final String paymentDetailParameterName : paymentDetailParameters) {
+            final String paymentDetailParameterValue = this.fromApiJsonHelper.extractStringNamed(paymentDetailParameterName, element);
+            baseDataValidator.reset().parameter(paymentDetailParameterName).value(paymentDetailParameterValue).ignoreIfNull()
+                    .notExceedingLengthOf(50);
+        }
     }
 
     /**

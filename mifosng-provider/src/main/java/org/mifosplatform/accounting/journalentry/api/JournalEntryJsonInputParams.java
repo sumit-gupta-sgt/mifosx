@@ -14,7 +14,7 @@ import java.util.Set;
 public enum JournalEntryJsonInputParams {
     OFFICE_ID("officeId"), TRANSACTION_DATE("transactionDate"), COMMENTS("comments"), CREDITS("credits"), DEBITS("debits"), LOCALE("locale"), DATE_FORMAT(
             "dateFormat"), REFERENCE_NUMBER("referenceNumber"), USE_ACCOUNTING_RULE("useAccountingRule"), ACCOUNTING_RULE("accountingRule"), AMOUNT(
-            "amount"), CURRENCY_CODE("currencyCode");
+            "amount"), CURRENCY_CODE("currencyCode"), PAYMENT_TYPEID("paymentTypeId"), Account_Number("accountNumber"), Check_Number("checkNumber"), Routing_Code("routingCode"), Receipt_Number("receiptNumber"), Bank_Number("bankNumber");
 
     private final String value;
 

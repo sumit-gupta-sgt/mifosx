@@ -27,13 +27,14 @@ public class JournalEntryCommand {
     private final String referenceNumber;
     private final Long accountingRuleId;
     private final BigDecimal amount;
+    private final Long paymentTypeId;
 
     private final SingleDebitOrCreditEntryCommand[] credits;
     private final SingleDebitOrCreditEntryCommand[] debits;
 
     public JournalEntryCommand(final Long officeId, final String currencyCode, final LocalDate transactionDate, final String comments,
             final SingleDebitOrCreditEntryCommand[] credits, final SingleDebitOrCreditEntryCommand[] debits, final String referenceNumber,
-            final Long accountingRuleId, final BigDecimal amount) {
+            final Long accountingRuleId, final BigDecimal amount, final Long paymentTypeId, final String accountNumber) {
         this.officeId = officeId;
         this.currencyCode = currencyCode;
         this.transactionDate = transactionDate;
@@ -43,6 +44,7 @@ public class JournalEntryCommand {
         this.referenceNumber = referenceNumber;
         this.accountingRuleId = accountingRuleId;
         this.amount = amount;
+        this.paymentTypeId=paymentTypeId;
     }
 
     public void validateForCreate() {
@@ -66,7 +68,9 @@ public class JournalEntryCommand {
         baseDataValidator.reset().parameter("credits").value(this.credits).ignoreIfNull();
 
         baseDataValidator.reset().parameter("debits").value(this.debits).ignoreIfNull();
-
+        
+        baseDataValidator.reset().parameter("paymentTypeId").value(this.paymentTypeId).ignoreIfNull().longGreaterThanZero();
+        
         // validation for credit array elements
         if (this.credits != null) {
             if (this.credits.length == 0) {
@@ -138,5 +142,9 @@ public class JournalEntryCommand {
     public Long getAccountingRuleId() {
         return this.accountingRuleId;
     }
-
+    
+    public Long getPaymentTypeId(){
+    	return this.paymentTypeId;
+    }
+    
 }
