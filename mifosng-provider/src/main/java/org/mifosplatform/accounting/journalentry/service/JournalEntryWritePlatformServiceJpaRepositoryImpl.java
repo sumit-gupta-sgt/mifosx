@@ -106,8 +106,6 @@ public class JournalEntryWritePlatformServiceJpaRepositoryImpl implements Journa
         try {
             final JournalEntryCommand journalEntryCommand = this.fromApiJsonDeserializer.commandFromApiJson(command.json());
             journalEntryCommand.validateForCreate();
-            this.fromApiJsonDeserializer.validateJournalPaymentDetail(command.json());
-
             // check office is valid
             final Long officeId = command.longValueOfParameterNamed(JournalEntryJsonInputParams.OFFICE_ID.getValue());
             final Office office = this.officeRepository.findOne(officeId);

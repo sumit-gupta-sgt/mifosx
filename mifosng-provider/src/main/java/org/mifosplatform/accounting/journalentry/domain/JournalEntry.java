@@ -39,7 +39,7 @@ public class JournalEntry extends AbstractAuditableCustom<AppUser, Long> {
     private Office office;
     
     @ManyToOne(optional = true)
-    @JoinColumn(name = "payment_type_id", nullable = true)
+    @JoinColumn(name = "payment_details_id", nullable = true)
     private PaymentDetail paymentDetail;
     
     @ManyToOne
